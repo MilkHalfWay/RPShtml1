@@ -1,204 +1,389 @@
 <!DOCTYPE html>
 <html lang="sl">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NullByte Lab</title>
+<title>Šolski turnirji (SERŠ Arena)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Major+Mono+Display&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap">
 <style>
-/* Layout: terminalski "zaslon" kot hero, pod njim enostolpčne sekcije z mrežo kartic; enotna temna tema po izbiri */
-:root {
-  --bg: #0f1419;
-  --panel: #161d25;
-  --line: #26313d;
-  --fg: #d7dde4;
-  --muted: #8794a3;
-  --amber: #ffb547;
-  --cyan: #6cc6d9;
-  --ok: #7fd18b;
-  --display: "Major Mono Display", "IBM Plex Mono", ui-monospace, monospace;
-  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg); color: var(--fg);
-  font: 16px/1.6 var(--sans);
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-.wrap { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 72px; padding-block: 28px 64px; }
-nav { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--mono); font-size: 14px; }
-.logo { font-family: var(--display); font-size: 22px; color: var(--amber); letter-spacing: .02em; }
-nav ul { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; flex-wrap: wrap; }
-a { color: var(--cyan); text-decoration: none; }
-a:hover { text-decoration: underline; }
-a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  /* Videz: turnirski razpored, dve "ekipni" barvi (modra in oranžna) */
+  :root {
+    --bg: #F4F6FA;
+    --surface: #FFFFFF;
+    --ink: #0F1A2E;
+    --muted: #586379;
+    --line: #D8DEE8;
+    --blue: #2F5BEA;
+    --orange: #F0582B;
+    --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --sans: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.6 var(--sans);
+    padding: 0 16px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 48px 0 40px; }
+  p { margin: 0 0 14px; max-width: 64ch; }
+  code { font: 0.9em var(--mono); background: #E7ECF5; padding: 2px 6px; border-radius: 4px; }
 
-.hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
-.hero > * { min-width: 0; }
-h1 { font-family: var(--display); font-weight: 400; font-size: clamp(34px, 6vw, 56px); line-height: 1.05; margin: 0 0 16px; text-wrap: balance; }
-h1 em { font-style: normal; color: var(--amber); }
-.lede { color: var(--muted); max-width: 46ch; margin: 0 0 24px; }
-.btn { display: inline-block; font: 600 15px var(--mono); background: var(--amber); color: #1a1205; border: 0; padding: 12px 20px; border-radius: 4px; cursor: pointer; }
-.btn:hover { filter: brightness(1.08); text-decoration: none; }
+  /* Glava */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: center; }
+  .meta { margin: 0 0 10px; color: var(--muted); font-weight: 500; }
+  h1 { margin: 0; font: 800 clamp(52px, 8.5vw, 92px)/0.92 var(--display); letter-spacing: -0.01em; }
+  .h1-sub { display: block; margin-top: 6px; font-weight: 600; font-size: 0.48em; color: var(--muted); letter-spacing: 0; }
+  .lede { margin: 22px 0 0; font-size: clamp(19px, 2.2vw, 22px); line-height: 1.45; font-weight: 500; max-width: 34ch; }
 
-.term { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font: 14px/1.7 var(--mono); }
-.term-bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-.term-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
-.term pre { margin: 0; padding: 16px; white-space: pre-wrap; word-break: break-word; min-height: 220px; }
-.p { color: var(--ok); } .c { color: var(--muted); } .a { color: var(--amber); }
-.cursor { display: inline-block; width: 8px; height: 1em; background: var(--amber); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+  .bracket { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 20px 14px; }
+  .bracket svg { display: block; width: 100%; height: auto; }
+  .bracket figcaption { margin-top: 10px; font-size: 14px; color: var(--muted); }
 
-h2 { font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); margin: 0 0 20px; }
-h2::before { content: "$ "; color: var(--muted); }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.card h3 { margin: 0; font-size: 18px; font-weight: 600; }
-.card p { margin: 0; color: var(--muted); font-size: 15px; }
-.tag { font: 12px var(--mono); color: var(--cyan); }
+  section { margin-top: 96px; }
+  h2 { margin: 0 0 20px; font: 800 clamp(32px, 4.5vw, 42px)/1 var(--display); }
+  h3 { margin: 0 0 12px; font: 700 24px/1.1 var(--display); }
 
-table { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
-.tbl { overflow-x: auto; }
-th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-th { font: 600 12px var(--mono); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
-td:first-child { font-family: var(--mono); color: var(--amber); }
+  /* Opis projekta */
+  .cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .features { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .features li { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--blue); border-radius: 10px; padding: 14px 18px; }
+  .features li:nth-child(2) { border-left-color: var(--orange); }
+  .features li:nth-child(3) { border-left-color: var(--ink); }
+  .features b { display: block; font-weight: 600; font-size: 18px; }
+  .features span { color: var(--muted); font-size: 16px; }
 
-.ctf { background: var(--panel); border: 1px dashed var(--amber); border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
-.ctf p { margin: 0; max-width: 62ch; }
-.ctf code { font-family: var(--mono); background: var(--bg); border: 1px solid var(--line); padding: 8px 12px; border-radius: 4px; display: block; word-break: break-all; color: var(--cyan); }
-form { display: flex; gap: 10px; flex-wrap: wrap; }
-input { flex: 1 1 220px; min-width: 0; font: 15px var(--mono); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 11px 12px; }
-.msg { font-family: var(--mono); font-size: 14px; min-height: 1.6em; margin: 0; }
-.msg.good { color: var(--ok); } .msg.bad { color: #ff7a6b; }
-details { color: var(--muted); font-size: 14px; }
-summary { cursor: pointer; font-family: var(--mono); }
+  .db { margin-top: 40px; }
+  .db-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; }
+  .table-box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .table-box code { background: none; padding: 0; font-weight: 600; font-size: 16px; color: var(--blue); }
+  .table-box p { margin: 6px 0 0; font-size: 15px; color: var(--muted); }
+  .rel { font: 600 15px var(--sans); color: var(--muted); text-align: center; }
 
-footer { border-top: 1px solid var(--line); padding-top: 20px; font: 13px var(--mono); color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  /* Persona */
+  .persona { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .pcard { margin: 0; background: var(--surface); border: 3px solid var(--ink); border-radius: 16px; overflow: hidden; }
+  .pcard svg { display: block; width: 100%; height: auto; }
+  .pcard figcaption { background: var(--ink); color: #fff; padding: 10px 16px 12px; }
+  .pcard figcaption b { display: block; font: 700 24px/1.1 var(--display); }
+  .pcard figcaption span { font-size: 15px; color: #C3CBDA; }
 
-@media (max-width: 720px) {
-  .hero, .grid { grid-template-columns: 1fr; }
-  .wrap { gap: 56px; }
-}
-@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+  .who { margin: 0 0 2px; font: 800 clamp(36px, 5vw, 48px)/1 var(--display); }
+  .age { margin: 0 0 18px; color: var(--muted); font-size: 18px; }
+  blockquote {
+    margin: 22px 0 0; padding: 14px 18px;
+    background: var(--surface); border-left: 4px solid var(--orange); border-radius: 0 10px 10px 0;
+    font: 600 21px/1.35 var(--sans); max-width: 40ch;
+  }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 56px; }
+  .two ul { margin: 0; padding-left: 20px; }
+  .two li { margin-bottom: 10px; }
+  .needs li::marker { color: var(--blue); }
+  .pains li::marker { color: var(--orange); }
+
+  .map { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; }
+  .map div { padding: 18px 20px; }
+  .map div:nth-child(1), .map div:nth-child(2) { border-bottom: 2px solid var(--ink); }
+  .map div:nth-child(odd) { border-right: 2px solid var(--ink); }
+  .map h4 { margin: 0 0 6px; font: 700 22px/1 var(--display); color: var(--blue); }
+  .map p { margin: 0; font-size: 16px; }
+  .block { margin-top: 56px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; vertical-align: top; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); }
+  th { font-weight: 600; font-size: 15px; color: var(--muted); border-bottom: 2px solid var(--ink); }
+  td:first-child { width: 40%; }
+
+  footer {
+    margin-top: 96px; padding-top: 20px; border-top: 2px solid var(--ink);
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px;
+    font-size: 15px; color: var(--muted);
+  }
+  footer p { margin: 0; }
+
+  @media (max-width: 800px) {
+    .wrap { padding-top: 32px; }
+    section { margin-top: 64px; }
+    .hero, .cols, .persona, .two { grid-template-columns: 1fr; gap: 32px; }
+    .pcard { max-width: 360px; }
+    .db-row { grid-template-columns: 1fr; }
+    .rel { text-align: left; }
+    .map { grid-template-columns: 1fr; }
+    .map div { border-right: 0 !important; border-bottom: 2px solid var(--ink); }
+    .map div:last-child { border-bottom: 0; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav>
-    <span class="logo">nullbyte</span>
-    <ul>
-      <li><a href="#delavnice">Delavnice</a></li>
-      <li><a href="#urnik">Urnik</a></li>
-      <li><a href="#izziv">Izziv</a></li>
-    </ul>
-  </nav>
 
+  <!-- 1. NASLOV SKUPINSKEGA PROJEKTA -->
   <header class="hero">
     <div>
-      <h1>Razumi kodo.<br><em>Potem jo zlomi.</em></h1>
-      <p class="lede">NullByte Lab je klub za programiranje in etično hekanje. Vsak teden se učimo Linuxa, Pythona in spletne varnosti ter rešujemo CTF izzive. Začetniki dobrodošli.</p>
-      <a class="btn" href="#izziv">Reši prvi izziv →</a>
+      <p class="meta">Projekt 5, skupina 5, RPS praksa</p>
+      <h1>Šolski turnirji <span class="h1-sub">(SERŠ Arena)</span></h1>
+      <p class="lede">Spletna aplikacija za razpise šolskih turnirjev in prijavo ekip, brez papirnatih prijavnic in zmede z razporedi.</p>
     </div>
-    <div class="term" aria-label="Primer terminala">
-      <div class="term-bar"><i></i><i></i><i></i></div>
-      <pre id="term"></pre>
-    </div>
+
+    <figure class="bracket">
+      <svg viewBox="0 0 440 280" role="img" aria-labelledby="bTitle" xmlns="http://www.w3.org/2000/svg">
+        <title id="bTitle">Primer turnirskega razporeda: dve polfinalni tekmi in finale</title>
+        <g font-family="Barlow, sans-serif" font-size="15">
+          <!-- polfinale 1 -->
+          <text x="0" y="12" font-size="12" fill="#586379">Polfinale 1, čet 14:00</text>
+          <rect x="0" y="20" width="150" height="34" rx="6" fill="#fff" stroke="#D8DEE8"/>
+          <rect x="0" y="20" width="4" height="34" fill="#2F5BEA"/>
+          <text x="14" y="42" font-weight="600" fill="#0F1A2E">3. Ra</text>
+          <text x="136" y="42" text-anchor="end" font-weight="600" fill="#0F1A2E">3</text>
+          <rect x="0" y="58" width="150" height="34" rx="6" fill="#fff" stroke="#D8DEE8"/>
+          <text x="14" y="80" fill="#586379">2. Eb</text>
+          <text x="136" y="80" text-anchor="end" fill="#586379">1</text>
+
+          <!-- polfinale 2 -->
+          <text x="0" y="162" font-size="12" fill="#586379">Polfinale 2, čet 14:30</text>
+          <rect x="0" y="170" width="150" height="34" rx="6" fill="#fff" stroke="#D8DEE8"/>
+          <text x="14" y="192" fill="#586379">3. Mc</text>
+          <text x="136" y="192" text-anchor="end" fill="#586379">2</text>
+          <rect x="0" y="208" width="150" height="34" rx="6" fill="#fff" stroke="#D8DEE8"/>
+          <rect x="0" y="208" width="4" height="34" fill="#F0582B"/>
+          <text x="14" y="230" font-weight="600" fill="#0F1A2E">4. Rb</text>
+          <text x="136" y="230" text-anchor="end" font-weight="600" fill="#0F1A2E">3</text>
+
+          <!-- povezave -->
+          <path d="M150 37 H175 V109 H200" fill="none" stroke="#2F5BEA" stroke-width="2"/>
+          <path d="M150 225 H175 V147 H200" fill="none" stroke="#F0582B" stroke-width="2"/>
+
+          <!-- finale -->
+          <text x="200" y="84" font-size="12" fill="#586379">Finale, pet 13:30</text>
+          <rect x="200" y="92" width="150" height="34" rx="6" fill="#fff" stroke="#D8DEE8"/>
+          <rect x="200" y="92" width="4" height="34" fill="#2F5BEA"/>
+          <text x="214" y="114" font-weight="600" fill="#0F1A2E">3. Ra</text>
+          <text x="336" y="114" text-anchor="end" fill="#586379">–</text>
+          <rect x="200" y="130" width="150" height="34" rx="6" fill="#fff" stroke="#D8DEE8"/>
+          <rect x="200" y="130" width="4" height="34" fill="#F0582B"/>
+          <text x="214" y="152" font-weight="600" fill="#0F1A2E">4. Rb</text>
+          <text x="336" y="152" text-anchor="end" fill="#586379">–</text>
+
+          <path d="M350 128 H382" fill="none" stroke="#586379" stroke-width="2" stroke-dasharray="4 4"/>
+
+          <!-- pokal -->
+          <g transform="translate(410 124)">
+            <path d="M-12 -12 C-24 -12 -24 4 -10 6" fill="none" stroke="#F5B82E" stroke-width="4"/>
+            <path d="M12 -12 C24 -12 24 4 10 6" fill="none" stroke="#F5B82E" stroke-width="4"/>
+            <path d="M-16 -22 H16 V-8 C16 6 8 14 0 14 C-8 14 -16 6 -16 -8 Z" fill="#F5B82E"/>
+            <rect x="-4" y="13" width="8" height="10" fill="#E0A21E"/>
+            <rect x="-13" y="22" width="26" height="7" rx="2" fill="#0F1A2E"/>
+          </g>
+        </g>
+      </svg>
+      <figcaption>Primer razporeda v aplikaciji: Rocket League 2v2, učilnica 211.</figcaption>
+    </figure>
   </header>
 
-  <section id="delavnice">
-    <h2>delavnice</h2>
-    <div class="grid">
-      <article class="card"><span class="tag">začetnik · 4 tedni</span><h3>Linux in ukazna vrstica</h3><p>Datoteke, pravice, pipe, grep in ssh. Brez strahu pred črnim oknom.</p></article>
-      <article class="card"><span class="tag">začetnik · 6 tednov</span><h3>Python za avtomatizacijo</h3><p>Skripte, ki namesto tebe razčlenijo loge, pošljejo zahteve in preštejejo stvari.</p></article>
-      <article class="card"><span class="tag">srednje · 5 tednov</span><h3>Spletna varnost</h3><p>OWASP Top 10 v praksi: SQL injection, XSS in IDOR na namenoma ranljivi aplikaciji.</p></article>
-      <article class="card"><span class="tag">vsi nivoji · vsak petek</span><h3>CTF večer</h3><p>Ekipno reševanje izzivov iz kriptografije, forenzike in obratnega inženirstva.</p></article>
+  <!-- 2. OPIS PROJEKTA -->
+  <section id="projekt">
+    <h2>Opis projekta</h2>
+    <div class="cols">
+      <div>
+        <p>Na šoli redno potekajo tekmovanja v e-športih (Rocket League, FC) in medrazredne tekme. Razpisi visijo na oglasni deski ali se izgubijo v razrednih chatih, prijave se zbirajo na papirju, razpored pa se ročno prepisuje. Posledica je zmeda: ekipe ne vedo, kdaj in kje igrajo, prijave se izgubijo, organizatorji pa porabijo več časa za papirje kot za sam turnir.</p>
+        <p>SERŠ Arena vse to prenese na splet. Organizator na enem mestu objavi tekmovanje z lokacijo in pravili igranja, vodje ekip pa svojo ekipo prijavijo v nekaj klikih in takoj vidijo, kdo še sodeluje.</p>
+      </div>
+      <ul class="features">
+        <li><b>Objave tekmovanj</b><span>Razpisi tekmovanj z lokacijo igrišča, terminom in pravili igranja.</span></li>
+        <li><b>Prijava ekip</b><span>Enostaven vnos ekipe: ime, razred in člani, brez papirnate prijavnice.</span></li>
+        <li><b>Pregled sodelujočih</b><span>Seznam vseh prijavljenih ekip za vsak turnir, viden vsem.</span></li>
+      </ul>
+    </div>
+
+    <div class="db">
+      <h3>Podatkovna baza</h3>
+      <div class="db-row">
+        <div class="table-box"><code>turnirji</code><p>Razpisana tekmovanja, med drugim lokacija igrišča.</p></div>
+        <div class="rel">en turnir, več prijav</div>
+        <div class="table-box"><code>prijave_ekip</code><p>Prijavljene ekipe in turnir, na katerega se prijavljajo.</p></div>
+      </div>
     </div>
   </section>
 
-  <section id="urnik">
-    <h2>urnik</h2>
-    <div class="tbl">
+  <!-- 3. OPIS PERSONE (Design Thinking) + 4. SLIKA PERSONE -->
+  <section id="persona">
+    <h2>Persona</h2>
+    <div class="persona">
+
+      <figure class="pcard">
+        <svg viewBox="0 0 400 440" role="img" aria-labelledby="pTitle pDesc" xmlns="http://www.w3.org/2000/svg">
+          <title id="pTitle">Ilustracija persone Luka</title>
+          <desc id="pDesc">Dijak s slušalkami za igranje in oranžnim dresom s kapetansko značko drži podlogo z zmedenim, prečrtanim razporedom. Ob njem sta nogometna žoga in igralni kontroler, okoli glave letijo papirnate prijavnice.</desc>
+          <defs>
+            <clipPath id="frame"><rect width="400" height="440"/></clipPath>
+            <clipPath id="ballClip"><circle cx="96" cy="398" r="40"/></clipPath>
+          </defs>
+          <g clip-path="url(#frame)">
+            <rect width="400" height="440" fill="#E9EEF8"/>
+            <!-- bled turnirski razpored v ozadju -->
+            <path d="M24 40 H74 V84 H120 M24 128 H74 V84 M276 40 H326 V84 H376 M276 128 H326 V84" fill="none" stroke="#D3DCEE" stroke-width="4"/>
+            <circle cx="200" cy="250" r="166" fill="#DCE5F5"/>
+
+            <!-- papirnate prijavnice -->
+            <g transform="translate(26 150) rotate(-12)">
+              <rect width="82" height="100" rx="3" fill="#fff" stroke="#C9D3E3"/>
+              <rect x="10" y="14" width="58" height="5" rx="2" fill="#C9D3E3"/>
+              <rect x="10" y="28" width="46" height="5" rx="2" fill="#C9D3E3"/>
+              <rect x="10" y="42" width="60" height="5" rx="2" fill="#C9D3E3"/>
+              <text x="14" y="84" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="28" font-weight="800" fill="#F0582B">???</text>
+            </g>
+            <g transform="translate(110 46) rotate(8)">
+              <rect width="78" height="58" rx="3" fill="#fff" stroke="#C9D3E3"/>
+              <text x="10" y="22" font-family="Barlow, sans-serif" font-size="13" font-weight="600" fill="#0F1A2E">Prijavnica</text>
+              <rect x="10" y="32" width="52" height="4" rx="2" fill="#C9D3E3"/>
+              <rect x="10" y="42" width="38" height="4" rx="2" fill="#C9D3E3"/>
+            </g>
+
+            <!-- kontroler -->
+            <g transform="translate(318 196) rotate(-10)">
+              <path d="M-38 -14 C-50 -14 -56 10 -48 22 C-42 30 -32 26 -26 16 H26 C32 26 42 30 48 22 C56 10 50 -14 38 -14 Z" fill="#1F2937"/>
+              <rect x="-36" y="-4" width="16" height="5" rx="1" fill="#fff"/>
+              <rect x="-30.5" y="-9.5" width="5" height="16" rx="1" fill="#fff"/>
+              <circle cx="28" cy="-5" r="4" fill="#2F5BEA"/>
+              <circle cx="37" cy="2" r="4" fill="#F0582B"/>
+            </g>
+
+            <!-- dres -->
+            <path d="M70 440 C72 368 116 322 200 318 C284 322 328 368 330 440 Z" fill="#F0582B"/>
+            <path d="M98 378 C110 352 128 336 150 328" stroke="#2F5BEA" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M302 378 C290 352 272 336 250 328" stroke="#2F5BEA" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <rect x="182" y="268" width="36" height="56" rx="12" fill="#DDA67E"/>
+            <path d="M168 322 L200 356 L232 322" stroke="#2F5BEA" stroke-width="10" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- kapetanska značka -->
+            <circle cx="284" cy="372" r="15" fill="#fff" stroke="#2F5BEA" stroke-width="3"/>
+            <text x="284" y="378" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="18" font-weight="800" fill="#2F5BEA">C</text>
+
+            <!-- glava -->
+            <ellipse cx="200" cy="226" rx="52" ry="60" fill="#E9B48C"/>
+            <path d="M148 218 C142 172 170 150 202 150 C236 150 260 172 252 218 C246 200 238 190 228 186 L222 196 L212 182 L202 194 L192 180 L184 194 L172 184 C160 192 152 204 148 218 Z" fill="#3B2A20"/>
+
+            <!-- slušalke -->
+            <path d="M146 226 C142 150 258 150 254 226" stroke="#1F2937" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <rect x="136" y="208" width="22" height="42" rx="10" fill="#1F2937"/>
+            <rect x="140" y="215" width="6" height="28" rx="3" fill="#2F5BEA"/>
+            <rect x="242" y="208" width="22" height="42" rx="10" fill="#1F2937"/>
+            <rect x="254" y="215" width="6" height="28" rx="3" fill="#2F5BEA"/>
+            <path d="M150 248 C154 270 168 278 182 276" stroke="#1F2937" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <circle cx="185" cy="276" r="5" fill="#1F2937"/>
+
+            <!-- obraz: odločen, malo jezen -->
+            <path d="M170 207 Q181 205 192 212" stroke="#2A1B12" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M208 212 Q219 205 230 207" stroke="#2A1B12" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <ellipse cx="183" cy="227" rx="4.5" ry="5" fill="#2A1B12"/>
+            <ellipse cx="217" cy="227" rx="4.5" ry="5" fill="#2A1B12"/>
+            <circle cx="184.5" cy="225" r="1.4" fill="#fff"/>
+            <circle cx="218.5" cy="225" r="1.4" fill="#fff"/>
+            <path d="M200 233 Q196 245 203 247" stroke="#C98E66" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M190 262 Q195 258 200 262 Q205 266 211 261" stroke="#8E3F35" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+            <!-- nogometna žoga -->
+            <circle cx="96" cy="398" r="40" fill="#fff"/>
+            <g clip-path="url(#ballClip)" fill="#0F1A2E">
+              <polygon points="96,386 107.4,394.3 103.1,407.7 88.9,407.7 84.6,394.3"/>
+              <circle cx="96" cy="362" r="11"/>
+              <circle cx="130" cy="387" r="11"/>
+              <circle cx="117" cy="427" r="11"/>
+              <circle cx="75" cy="427" r="11"/>
+              <circle cx="62" cy="387" r="11"/>
+            </g>
+            <g stroke="#0F1A2E" stroke-width="2" stroke-linecap="round">
+              <path d="M96 386 V373 M107.4 394.3 L119 390.5 M103.1 407.7 L110.5 417.5 M88.9 407.7 L81.5 417.5 M84.6 394.3 L73 390.5"/>
+            </g>
+            <circle cx="96" cy="398" r="40" fill="none" stroke="#0F1A2E" stroke-width="3"/>
+
+            <!-- podloga z zmedenim razporedom -->
+            <g transform="translate(206 394) rotate(-6)">
+              <rect x="-52" y="-48" width="104" height="124" rx="6" fill="#A86F3E"/>
+              <rect x="-44" y="-36" width="88" height="108" fill="#fff"/>
+              <rect x="-18" y="-56" width="36" height="16" rx="4" fill="#9AA4B2"/>
+              <text x="-36" y="-17" font-family="Barlow, sans-serif" font-size="13" font-weight="600" fill="#0F1A2E">Razpored</text>
+              <rect x="-36" y="-8" width="54" height="5" rx="2" fill="#C9D3E3"/>
+              <path d="M-38 -5.5 H22" stroke="#E5484D" stroke-width="2"/>
+              <rect x="-36" y="4" width="62" height="5" rx="2" fill="#C9D3E3"/>
+              <rect x="-36" y="16" width="40" height="5" rx="2" fill="#C9D3E3"/>
+              <path d="M-38 18.5 H6" stroke="#E5484D" stroke-width="2"/>
+              <path d="M-32 40 C-14 28 4 52 22 34" stroke="#2F5BEA" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <text x="14" y="26" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="22" font-weight="800" fill="#F0582B">?</text>
+              <ellipse cx="-52" cy="14" rx="12" ry="17" fill="#E9B48C"/>
+              <ellipse cx="52" cy="18" rx="12" ry="17" fill="#E9B48C"/>
+            </g>
+          </g>
+        </svg>
+        <figcaption><b>Luka Horvat</b><span>Kapetan razredne ekipe 3. Ra</span></figcaption>
+      </figure>
+
+      <div>
+        <p class="who">Luka Horvat</p>
+        <p class="age">17 let, dijak 3. letnika, smer računalniški tehnik</p>
+        <p>Luka je kapetan razredne ekipe v Rocket Leagueu in FC, pri medrazrednem nogometu pa vedno zbira soigralce. Pomaga tudi dijaški skupnosti pri organizaciji turnirjev. Ko je turnir razpisan, mora zbrati ekipo, oddati prijavnico in vsem sporočiti, kdaj in kje igrajo. Lani je pri turnirju v FC sam prepisoval papirnate prijave v tabelo, razpored pa se je trikrat spremenil.</p>
+        <p>Na sliki so zbrane njegove lastnosti: slušalke in kontroler za e-šport, nogometna žoga za medrazredne tekme, kapetanska značka za vlogo vodje ekipe ter podloga s prečrtanim razporedom in letečimi prijavnicami za zmedo, ki jo prinaša papir.</p>
+        <blockquote>»Prijavnico sem oddal na listku, na dan turnirja pa naše ekipe ni bilo na seznamu.«</blockquote>
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="needs">
+        <h3>Njegove potrebe</h3>
+        <ul>
+          <li>Vse razpisane turnirje videti na enem mestu, z lokacijo, terminom in pravili igranja.</li>
+          <li>Ekipo prijaviti v minuti, brez papirja in iskanja profesorja.</li>
+          <li>Takoj videti, da je prijava sprejeta in katere ekipe še sodelujejo.</li>
+          <li>Kot organizator imeti vse prijave zbrane na enem mestu, brez prepisovanja listkov.</li>
+        </ul>
+      </div>
+      <div class="pains">
+        <h3>Njegove težave</h3>
+        <ul>
+          <li>Razpisi visijo na oglasni deski ali v chatu, zato jih veliko dijakov sploh ne opazi.</li>
+          <li>Papirnate prijave se izgubijo, podvojijo ali so nečitljive.</li>
+          <li>Ko se razpored spremeni, del ekip izve prepozno.</li>
+          <li>Pravila (npr. 2v2 ali 3v3, trajanje tekme) niso nikjer jasno zapisana, zato se na tekmi prepirajo.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Empatijski zemljevid</h3>
+      <div class="map">
+        <div><h4>Pravi</h4><p>»Kje točno igramo?« »Ali smo sploh prijavljeni?«</p></div>
+        <div><h4>Misli</h4><p>Da bi turnir potekal gladko, če bi bilo vse zapisano na enem mestu.</p></div>
+        <div><h4>Počne</h4><p>Fotografira razpise z oglasne deske, piše soigralcem v chat in sprašuje organizatorje.</p></div>
+        <div><h4>Čuti</h4><p>Odgovornost do soigralcev in jezo, ko ekipa zaradi zmede izgubi tekmo brez igre.</p></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Kako SERŠ Arena reši Lukove težave</h3>
       <table>
-        <thead><tr><th>Dan</th><th>Ura</th><th>Tema</th><th>Prostor</th></tr></thead>
+        <thead><tr><th>Težava</th><th>Rešitev v aplikaciji</th></tr></thead>
         <tbody>
-          <tr><td>PON</td><td>18:00–20:00</td><td>Linux in ukazna vrstica</td><td>Lab 0x01</td></tr>
-          <tr><td>SRE</td><td>18:00–20:00</td><td>Python za avtomatizacijo</td><td>Lab 0x02</td></tr>
-          <tr><td>ČET</td><td>18:30–21:00</td><td>Spletna varnost</td><td>Lab 0x01</td></tr>
-          <tr><td>PET</td><td>19:00–23:00</td><td>CTF večer</td><td>Velika dvorana</td></tr>
+          <tr><td>Razpisi so raztreseni po deskah in chatih</td><td>Objave tekmovanj: vsi razpisi na eni strani z lokacijo igrišča in pravili.</td></tr>
+          <tr><td>Papirnate prijave se izgubijo</td><td>Prijava ekip prek obrazca, shranjena v tabeli <code>prijave_ekip</code>.</td></tr>
+          <tr><td>Ne ve, katere ekipe še igrajo</td><td>Pregled sodelujočih za vsak turnir.</td></tr>
+          <tr><td>Pravila niso jasna</td><td>Pravila igranja so zapisana pri vsakem razpisu.</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
-  <section id="izziv">
-    <h2>izziv #001</h2>
-    <div class="ctf">
-      <p>Našli smo skrivno sporočilo. Videti je kot nesmisel, a ni šifrirano, le zakodirano. Dekodiraj ga in vpiši zastavico v obliki <span class="a">NB{...}</span>.</p>
-      <code>TkJ7YmFzZTY0X25pX3NpZnJpcmFuamV9</code>
-      <form id="flag-form">
-        <input id="flag" type="text" placeholder="NB{...}" autocomplete="off" spellcheck="false" aria-label="Zastavica">
-        <button class="btn" type="submit">Preveri</button>
-      </form>
-      <p class="msg" id="msg" role="status"></p>
-      <details><summary>Namig</summary>Niz je sestavljen iz črk, številk in se konča z znakom, ki je pogost pri kodiranju Base64. V Pythonu poskusi <span class="a">base64.b64decode()</span>.</details>
-    </div>
-  </section>
-
+  <!-- NOGA: vsak član vpiše svoje ime -->
   <footer>
-    <span>© 2026 NullByte Lab · primer strani</span>
-    <span>Hekamo samo s privolitvijo.</span>
+    <p>Avtor te verzije: Ime Priimek</p>
+    <p>Projekt 5, skupina 5: Ime Priimek, Ime Priimek, Ime Priimek</p>
   </footer>
+
 </div>
-
-<script>
-(function () {
-  const lines = [
-    ['p', '$ '], ['', 'whoami\n'],
-    ['', 'gost\n'],
-    ['p', '$ '], ['', 'ls delavnice/\n'],
-    ['a', 'linux/  python/  web-sec/  ctf/\n'],
-    ['p', '$ '], ['', 'cat pravila.txt\n'],
-    ['c', '# 1. Napadaj samo sisteme, za katere imaš dovoljenje.\n# 2. Deli znanje.\n# 3. Beri dokumentacijo.\n'],
-    ['p', '$ '], ['', './pridruzi_se.sh\n'],
-    ['', 'Dostop odobren. Dobrodošel.\n']
-  ];
-  const el = document.getElementById('term');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function span(cls, text) { const s = document.createElement('span'); if (cls) s.className = cls; s.textContent = text; return s; }
-  const cursor = document.createElement('span'); cursor.className = 'cursor';
-  if (reduce) { lines.forEach(([c, t]) => el.appendChild(span(c, t))); el.appendChild(cursor); return; }
-  // Najprej prikaži celo besedilo (vidno stanje), nato ga ponovno "natipkaj".
-  let i = 0, j = 0, cur;
-  el.appendChild(cursor);
-  function tick() {
-    if (i >= lines.length) return;
-    const [cls, text] = lines[i];
-    if (j === 0) { cur = span(cls, ''); el.insertBefore(cur, cursor); }
-    const fast = cls === 'c' || cls === 'a' || cls === 'p';
-    cur.textContent += fast ? text : text[j];
-    j = fast ? text.length : j + 1;
-    if (j >= text.length) { i++; j = 0; setTimeout(tick, 260); } else setTimeout(tick, 45);
-  }
-  tick();
-})();
-
-document.getElementById('flag-form').addEventListener('submit', function (e) {
-  e.preventDefault();
-  const val = document.getElementById('flag').value.trim();
-  const msg = document.getElementById('msg');
-  if (btoa(val) === 'TkJ7YmFzZTY0X25pX3NpZnJpcmFuamV9') {
-    msg.className = 'msg good';
-    msg.textContent = '✓ Pravilno! Base64 je kodiranje, ne šifriranje. Kdorkoli ga lahko prebere.';
-  } else {
-    msg.className = 'msg bad';
-    msg.textContent = '✗ Ni še. Poskusi znova ali odpri namig.';
-  }
-});
-</script>
 </body>
 </html>
