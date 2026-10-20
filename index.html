@@ -1,29 +1,204 @@
 <!DOCTYPE html>
 <html lang="sl">
 <head>
-    <style>
-        h1 {
-            font-weight: 900;
-            color: #0056b3;
-            text-align: center;
-        }
-        h2 {
-            font-weight: lighter;
-            text-align: center;
-        }
-        p{
-            text-align: center;
-            font-weight: 200;
-        }
-    </style>
-    <title>Razvoj produktov in storitev</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NullByte Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Major+Mono+Display&display=swap">
+<style>
+/* Layout: terminalski "zaslon" kot hero, pod njim enostolpčne sekcije z mrežo kartic; enotna temna tema po izbiri */
+:root {
+  --bg: #0f1419;
+  --panel: #161d25;
+  --line: #26313d;
+  --fg: #d7dde4;
+  --muted: #8794a3;
+  --amber: #ffb547;
+  --cyan: #6cc6d9;
+  --ok: #7fd18b;
+  --display: "Major Mono Display", "IBM Plex Mono", ui-monospace, monospace;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 72px; padding-block: 28px 64px; }
+nav { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--mono); font-size: 14px; }
+.logo { font-family: var(--display); font-size: 22px; color: var(--amber); letter-spacing: .02em; }
+nav ul { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; flex-wrap: wrap; }
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+.hero > * { min-width: 0; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(34px, 6vw, 56px); line-height: 1.05; margin: 0 0 16px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--amber); }
+.lede { color: var(--muted); max-width: 46ch; margin: 0 0 24px; }
+.btn { display: inline-block; font: 600 15px var(--mono); background: var(--amber); color: #1a1205; border: 0; padding: 12px 20px; border-radius: 4px; cursor: pointer; }
+.btn:hover { filter: brightness(1.08); text-decoration: none; }
+
+.term { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font: 14px/1.7 var(--mono); }
+.term-bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.term-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.term pre { margin: 0; padding: 16px; white-space: pre-wrap; word-break: break-word; min-height: 220px; }
+.p { color: var(--ok); } .c { color: var(--muted); } .a { color: var(--amber); }
+.cursor { display: inline-block; width: 8px; height: 1em; background: var(--amber); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+h2 { font-family: var(--mono); font-weight: 600; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); margin: 0 0 20px; }
+h2::before { content: "$ "; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card h3 { margin: 0; font-size: 18px; font-weight: 600; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.tag { font: 12px var(--mono); color: var(--cyan); }
+
+table { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
+.tbl { overflow-x: auto; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 600 12px var(--mono); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+td:first-child { font-family: var(--mono); color: var(--amber); }
+
+.ctf { background: var(--panel); border: 1px dashed var(--amber); border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.ctf p { margin: 0; max-width: 62ch; }
+.ctf code { font-family: var(--mono); background: var(--bg); border: 1px solid var(--line); padding: 8px 12px; border-radius: 4px; display: block; word-break: break-all; color: var(--cyan); }
+form { display: flex; gap: 10px; flex-wrap: wrap; }
+input { flex: 1 1 220px; min-width: 0; font: 15px var(--mono); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 11px 12px; }
+.msg { font-family: var(--mono); font-size: 14px; min-height: 1.6em; margin: 0; }
+.msg.good { color: var(--ok); } .msg.bad { color: #ff7a6b; }
+details { color: var(--muted); font-size: 14px; }
+summary { cursor: pointer; font-family: var(--mono); }
+
+footer { border-top: 1px solid var(--line); padding-top: 20px; font: 13px var(--mono); color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+@media (max-width: 720px) {
+  .hero, .grid { grid-template-columns: 1fr; }
+  .wrap { gap: 56px; }
+}
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
 </head>
 <body>
-    <h1>Razvoj produktov in storitev</h1>
-    <h2>Moj prvi GitHub spletni projekt</h2>
-    <p>Dobrodošli na moji prvi spletni strani! Pri tem predmetu se učimo, kako od ideje razviti pravi IT produkt. Spoznavamo sodobna orodja, kot je GitHub, ki nam omogočajo varno shranjevanje kode in sodelovanje v ekipi.</p>
-    <p>Začetek je vedno najtežji, a vsaka vrstica kode nas pripelje bližje cilju.</p>
-    <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fcdn.wallpapersafari.com%2F37%2F28%2Fxs0fTZ.jpg&f=1&nofb=1&ipt=9501319ba0aac9f29c8b011cc009992356b85cb9be795f2bd4308ddb01436324&ipo=images">
+<div class="wrap">
+  <nav>
+    <span class="logo">nullbyte</span>
+    <ul>
+      <li><a href="#delavnice">Delavnice</a></li>
+      <li><a href="#urnik">Urnik</a></li>
+      <li><a href="#izziv">Izziv</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>Razumi kodo.<br><em>Potem jo zlomi.</em></h1>
+      <p class="lede">NullByte Lab je klub za programiranje in etično hekanje. Vsak teden se učimo Linuxa, Pythona in spletne varnosti ter rešujemo CTF izzive. Začetniki dobrodošli.</p>
+      <a class="btn" href="#izziv">Reši prvi izziv →</a>
+    </div>
+    <div class="term" aria-label="Primer terminala">
+      <div class="term-bar"><i></i><i></i><i></i></div>
+      <pre id="term"></pre>
+    </div>
+  </header>
+
+  <section id="delavnice">
+    <h2>delavnice</h2>
+    <div class="grid">
+      <article class="card"><span class="tag">začetnik · 4 tedni</span><h3>Linux in ukazna vrstica</h3><p>Datoteke, pravice, pipe, grep in ssh. Brez strahu pred črnim oknom.</p></article>
+      <article class="card"><span class="tag">začetnik · 6 tednov</span><h3>Python za avtomatizacijo</h3><p>Skripte, ki namesto tebe razčlenijo loge, pošljejo zahteve in preštejejo stvari.</p></article>
+      <article class="card"><span class="tag">srednje · 5 tednov</span><h3>Spletna varnost</h3><p>OWASP Top 10 v praksi: SQL injection, XSS in IDOR na namenoma ranljivi aplikaciji.</p></article>
+      <article class="card"><span class="tag">vsi nivoji · vsak petek</span><h3>CTF večer</h3><p>Ekipno reševanje izzivov iz kriptografije, forenzike in obratnega inženirstva.</p></article>
+    </div>
+  </section>
+
+  <section id="urnik">
+    <h2>urnik</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Dan</th><th>Ura</th><th>Tema</th><th>Prostor</th></tr></thead>
+        <tbody>
+          <tr><td>PON</td><td>18:00–20:00</td><td>Linux in ukazna vrstica</td><td>Lab 0x01</td></tr>
+          <tr><td>SRE</td><td>18:00–20:00</td><td>Python za avtomatizacijo</td><td>Lab 0x02</td></tr>
+          <tr><td>ČET</td><td>18:30–21:00</td><td>Spletna varnost</td><td>Lab 0x01</td></tr>
+          <tr><td>PET</td><td>19:00–23:00</td><td>CTF večer</td><td>Velika dvorana</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="izziv">
+    <h2>izziv #001</h2>
+    <div class="ctf">
+      <p>Našli smo skrivno sporočilo. Videti je kot nesmisel, a ni šifrirano, le zakodirano. Dekodiraj ga in vpiši zastavico v obliki <span class="a">NB{...}</span>.</p>
+      <code>TkJ7YmFzZTY0X25pX3NpZnJpcmFuamV9</code>
+      <form id="flag-form">
+        <input id="flag" type="text" placeholder="NB{...}" autocomplete="off" spellcheck="false" aria-label="Zastavica">
+        <button class="btn" type="submit">Preveri</button>
+      </form>
+      <p class="msg" id="msg" role="status"></p>
+      <details><summary>Namig</summary>Niz je sestavljen iz črk, številk in se konča z znakom, ki je pogost pri kodiranju Base64. V Pythonu poskusi <span class="a">base64.b64decode()</span>.</details>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 NullByte Lab · primer strani</span>
+    <span>Hekamo samo s privolitvijo.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const lines = [
+    ['p', '$ '], ['', 'whoami\n'],
+    ['', 'gost\n'],
+    ['p', '$ '], ['', 'ls delavnice/\n'],
+    ['a', 'linux/  python/  web-sec/  ctf/\n'],
+    ['p', '$ '], ['', 'cat pravila.txt\n'],
+    ['c', '# 1. Napadaj samo sisteme, za katere imaš dovoljenje.\n# 2. Deli znanje.\n# 3. Beri dokumentacijo.\n'],
+    ['p', '$ '], ['', './pridruzi_se.sh\n'],
+    ['', 'Dostop odobren. Dobrodošel.\n']
+  ];
+  const el = document.getElementById('term');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function span(cls, text) { const s = document.createElement('span'); if (cls) s.className = cls; s.textContent = text; return s; }
+  const cursor = document.createElement('span'); cursor.className = 'cursor';
+  if (reduce) { lines.forEach(([c, t]) => el.appendChild(span(c, t))); el.appendChild(cursor); return; }
+  // Najprej prikaži celo besedilo (vidno stanje), nato ga ponovno "natipkaj".
+  let i = 0, j = 0, cur;
+  el.appendChild(cursor);
+  function tick() {
+    if (i >= lines.length) return;
+    const [cls, text] = lines[i];
+    if (j === 0) { cur = span(cls, ''); el.insertBefore(cur, cursor); }
+    const fast = cls === 'c' || cls === 'a' || cls === 'p';
+    cur.textContent += fast ? text : text[j];
+    j = fast ? text.length : j + 1;
+    if (j >= text.length) { i++; j = 0; setTimeout(tick, 260); } else setTimeout(tick, 45);
+  }
+  tick();
+})();
+
+document.getElementById('flag-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const val = document.getElementById('flag').value.trim();
+  const msg = document.getElementById('msg');
+  if (btoa(val) === 'TkJ7YmFzZTY0X25pX3NpZnJpcmFuamV9') {
+    msg.className = 'msg good';
+    msg.textContent = '✓ Pravilno! Base64 je kodiranje, ne šifriranje. Kdorkoli ga lahko prebere.';
+  } else {
+    msg.className = 'msg bad';
+    msg.textContent = '✗ Ni še. Poskusi znova ali odpri namig.';
+  }
+});
+</script>
 </body>
 </html>
-
